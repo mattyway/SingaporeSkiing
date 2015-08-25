@@ -97,8 +97,6 @@ namespace SingaporeSkiing
 			{
 				lineNumber++;
 
-				long gridY = lineNumber - 2;
-
 				var line = streamReader.ReadLine();
 
 				if (string.IsNullOrWhiteSpace(line))
@@ -112,6 +110,9 @@ namespace SingaporeSkiing
 				{
 					throw new ParseException($"Line {lineNumber} does not have {gridWidth} altitude values");
 				}
+
+				// Subtract two because grid data starts on line 2
+				long gridY = lineNumber - 2;
 
 				for (int gridX = 0; gridX < lineParts.Length; gridX++)
 				{
