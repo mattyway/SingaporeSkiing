@@ -16,12 +16,13 @@ namespace SingaporeSkiing
 			var filename = args[0];
 
 			bool didParse = false;
+			MapData mapData = null;
 
 			try
 			{
 				using (var fileStream = File.OpenText(filename))
 				{
-					didParse = TryParseFile(fileStream);
+					didParse = TryParseFile(fileStream, out mapData);
 				}
 			}
 			catch (IOException e)
@@ -29,7 +30,7 @@ namespace SingaporeSkiing
 				Console.WriteLine($"Failed to open map file '{filename}': '{e.Message}");
 			}
 
-			if (!didParse)
+			if (!didParse || mapData == null)
 			{
 				Console.WriteLine("Failed to parse file");
 			}
@@ -37,11 +38,12 @@ namespace SingaporeSkiing
 			return 0;
 		}
 
-		private static bool TryParseFile(StreamReader streamReader)
+		private static bool TryParseFile(StreamReader streamReader, out MapData mapData)
 		{
+			mapData = null;
 			try
 			{
-				ParseFile(streamReader);
+				mapData = ParseFile(streamReader);
 			}
 			catch (IOException e)
 			{
@@ -57,7 +59,7 @@ namespace SingaporeSkiing
 			return true;
 		}
 
-		private static void ParseFile(StreamReader streamReader)
+		private static MapData ParseFile(StreamReader streamReader)
 		{
 			long lineNumber = 1;
 			var sizeLine = streamReader.ReadLine();
@@ -157,6 +159,8 @@ namespace SingaporeSkiing
 			{
 				Console.WriteLine("Failed to find highest altitude");
 			}
+
+			return new MapData(gridWidth, gridHeight, altitudeBuffer);
 		}
 
 		private class ParseException : Exception
