@@ -29,11 +29,7 @@ namespace SingaporeSkiing
 				Console.WriteLine($"Failed to open map file '{filename}': '{e.Message}");
 			}
 
-			if (didParse)
-			{
-				Console.WriteLine("Parsed file!");
-			}
-			else
+			if (!didParse)
 			{
 				Console.WriteLine("Failed to parse file");
 			}
