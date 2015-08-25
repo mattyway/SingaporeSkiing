@@ -33,6 +33,7 @@ namespace SingaporeSkiing
 			if (!didParse || mapData == null)
 			{
 				Console.WriteLine("Failed to parse file");
+				return 2;
 			}
 
 			return 0;
