@@ -36,6 +36,31 @@ namespace SingaporeSkiing
 				return 2;
 			}
 
+			long highestAltitude = -1;
+			long highestAltitudeCount = 0;
+
+			foreach (var altitude in mapData.Altitudes)
+			{
+				if (altitude > highestAltitude)
+				{
+					highestAltitude = altitude;
+					highestAltitudeCount = 1;
+				}
+				else if (altitude == highestAltitude)
+				{
+					highestAltitudeCount++;
+				}
+			}
+
+			if (highestAltitude != -1 && highestAltitudeCount > 0)
+			{
+				Console.WriteLine($"Found a total of {highestAltitudeCount} peaks at altitude {highestAltitude}");
+			}
+			else
+			{
+				Console.WriteLine("Failed to find highest altitude");
+			}
+
 			return 0;
 		}
 
@@ -93,9 +118,6 @@ namespace SingaporeSkiing
 
 			long[] altitudeBuffer = new long[gridWidth*gridHeight];
 
-			long highestAltitude = -1;
-			long highestAltitudeCount = 0;
-
 			while (!streamReader.EndOfStream && lineNumber < expectedLineNumber)
 			{
 				lineNumber++;
@@ -129,16 +151,6 @@ namespace SingaporeSkiing
 					}
 
 					altitudeBuffer[(gridY*gridWidth) + gridX] = altitude;
-
-					if (altitude > highestAltitude)
-					{
-						highestAltitude = altitude;
-						highestAltitudeCount = 1;
-					}
-					else if (altitude == highestAltitude)
-					{
-						highestAltitudeCount++;
-					}
 				}
 			}
 
@@ -150,15 +162,6 @@ namespace SingaporeSkiing
 			if (!streamReader.EndOfStream)
 			{
 				throw new ParseException("Unexpected lines at end of file");
-			}
-
-			if (highestAltitude != -1 && highestAltitudeCount > 0)
-			{
-				Console.WriteLine($"Found a total of {highestAltitudeCount} peaks at altitude {highestAltitude}");
-			}
-			else
-			{
-				Console.WriteLine("Failed to find highest altitude");
 			}
 
 			return new MapData(gridWidth, gridHeight, altitudeBuffer);
