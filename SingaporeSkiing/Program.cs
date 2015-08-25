@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace SingaporeSkiing
 {
@@ -60,6 +63,8 @@ namespace SingaporeSkiing
 			{
 				Console.WriteLine("Failed to find highest altitude");
 			}
+
+			ExportImage(mapData, highestAltitude, filename);
 
 			return 0;
 		}
@@ -172,6 +177,34 @@ namespace SingaporeSkiing
 			public ParseException(string message) : base(message)
 			{
 			}
+		}
+
+		private static void ExportImage(MapData mapData, long highestAltitude, string filename)
+		{
+			byte[] pixelBuffer = new byte[mapData.Width*mapData.Height*3];
+			for (long i = 0; i < pixelBuffer.Length; i += 3)
+			{
+				long altitudeIdx = i/3;
+
+				float normalisedAltitude = Math.Min(Math.Max(mapData.Altitudes[altitudeIdx]/(float) highestAltitude, 0f), 1f);
+				byte pixelValue = (byte) (normalisedAltitude*0xFF);
+
+				pixelBuffer[i + 0] = pixelValue;
+				pixelBuffer[i + 1] = pixelValue;
+				pixelBuffer[i + 2] = pixelValue;
+			}
+
+			GCHandle pixelBufferHandle = GCHandle.Alloc(pixelBuffer, GCHandleType.Pinned);
+
+			using (
+				Image image = new Bitmap((int) mapData.Width, (int) mapData.Height, (int) (mapData.Width*3),
+					PixelFormat.Format24bppRgb, pixelBufferHandle.AddrOfPinnedObject()))
+			{
+				var imageName = filename + ".png";
+				image.Save(imageName);
+			}
+
+			pixelBufferHandle.Free();
 		}
 	}
 }
