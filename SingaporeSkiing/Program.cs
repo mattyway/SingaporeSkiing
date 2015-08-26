@@ -186,7 +186,7 @@ namespace SingaporeSkiing
 			{
 				long altitudeIdx = i/3;
 
-				float normalisedAltitude = Math.Min(Math.Max(mapData.Altitudes[altitudeIdx]/(float) highestAltitude, 0f), 1f);
+				double normalisedAltitude = Math.Min(Math.Max(mapData.Altitudes[altitudeIdx]/(double) highestAltitude, 0f), 1f);
 				byte pixelValue = (byte) (normalisedAltitude*0xFF);
 
 				pixelBuffer[i + 0] = pixelValue;
