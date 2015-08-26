@@ -57,6 +57,8 @@ namespace SingaporeSkiing
 
 			ExportImage(mapData, highestAltitude, filename);
 
+			Map map = new Map(mapData);
+
 			return 0;
 		}
 
