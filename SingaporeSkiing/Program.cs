@@ -22,17 +22,7 @@ namespace SingaporeSkiing
 			bool didParse = false;
 			MapData mapData = null;
 
-			try
-			{
-				using (var fileStream = File.OpenText(filename))
-				{
-					didParse = TryParseFile(fileStream, out mapData);
-				}
-			}
-			catch (IOException e)
-			{
-				Console.WriteLine($"Failed to open map file '{filename}': '{e.Message}");
-			}
+			didParse = MapReader.TryParseFile(filename, out mapData);
 
 			if (!didParse || mapData == null)
 			{
@@ -68,116 +58,6 @@ namespace SingaporeSkiing
 			ExportImage(mapData, highestAltitude, filename);
 
 			return 0;
-		}
-
-		private static bool TryParseFile(StreamReader streamReader, out MapData mapData)
-		{
-			mapData = null;
-			try
-			{
-				mapData = ParseFile(streamReader);
-			}
-			catch (IOException e)
-			{
-				Console.WriteLine($"Error occurred reading file: '{e.Message}'");
-				return false;
-			}
-			catch (ParseException e)
-			{
-				Console.WriteLine($"Parse error: '{e.Message}'");
-				return false;
-			}
-
-			return true;
-		}
-
-		private static MapData ParseFile(StreamReader streamReader)
-		{
-			long lineNumber = 1;
-			var sizeLine = streamReader.ReadLine();
-
-			if (string.IsNullOrWhiteSpace(sizeLine))
-			{
-				throw new ParseException($"Line {lineNumber} is empty");
-			}
-
-			var sizeParts = sizeLine.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
-			if (sizeParts.Length != 2)
-			{
-				throw new ParseException("Unable to parse width and height of map");
-			}
-
-			long gridWidth;
-			long gridHeight;
-
-			if (!long.TryParse(sizeParts[0], out gridWidth))
-			{
-				throw new ParseException($"Unable to parse grid width ({sizeParts[0]})");
-			}
-
-			if (!long.TryParse(sizeParts[1], out gridHeight))
-			{
-				throw new ParseException($"Unable to parse grid height ({sizeParts[1]})");
-			}
-
-			long expectedLineNumber = gridHeight + 1;
-
-			long[] altitudeBuffer = new long[gridWidth*gridHeight];
-
-			while (!streamReader.EndOfStream && lineNumber < expectedLineNumber)
-			{
-				lineNumber++;
-
-				var line = streamReader.ReadLine();
-
-				if (string.IsNullOrWhiteSpace(line))
-				{
-					throw new ParseException($"Line {lineNumber} is empty");
-				}
-
-				var lineParts = line.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
-
-				if (lineParts.Length != gridWidth)
-				{
-					throw new ParseException($"Line {lineNumber} does not have {gridWidth} altitude values");
-				}
-
-				// Subtract two because grid data starts on line 2
-				long gridY = lineNumber - 2;
-
-				for (int gridX = 0; gridX < lineParts.Length; gridX++)
-				{
-					var linePart = lineParts[gridX];
-
-					long altitude;
-
-					if (!long.TryParse(linePart, out altitude))
-					{
-						throw new ParseException($"Unable to parse value {gridX} on line {lineNumber} ({linePart})");
-					}
-
-					altitudeBuffer[(gridY*gridWidth) + gridX] = altitude;
-				}
-			}
-
-			if (lineNumber != expectedLineNumber)
-			{
-				throw new ParseException("Failed to read expected number of lines");
-			}
-
-			if (!streamReader.EndOfStream)
-			{
-				throw new ParseException("Unexpected lines at end of file");
-			}
-
-			return new MapData(gridWidth, gridHeight, altitudeBuffer);
-		}
-
-		private class ParseException : Exception
-		{
-			public ParseException(string message) : base(message)
-			{
-			}
 		}
 
 		private static void ExportImage(MapData mapData, long highestAltitude, string filename)
