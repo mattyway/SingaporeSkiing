@@ -128,15 +128,7 @@ namespace SingaporeSkiing
 				{
 					MapNode node = GetNode(x, y);
 
-					if (bestNode == null)
-					{
-						bestNode = node;
-					}
-					else if (node.Path.Steps == bestNode.Path.Steps && node.Path.Descent > bestNode.Path.Descent)
-					{
-						bestNode = node;
-					}
-					else if (node.Path.Steps > bestNode.Path.Steps)
+					if (bestNode == null || node.Path > bestNode.Path)
 					{
 						bestNode = node;
 					}
@@ -202,15 +194,7 @@ namespace SingaporeSkiing
 					link.ToNode.BuildPath();
 				}
 
-				if (bestLink == null)
-				{
-					bestLink = link;
-				}
-				else if (bestLink.ToNode.Path.Steps == link.ToNode.Path.Steps && link.ToNode.Path.Descent > bestLink.ToNode.Path.Descent)
-				{
-					bestLink = link;
-				}
-				else if (link.ToNode.Path.Steps > bestLink.ToNode.Path.Steps)
+				if (bestLink == null || link.ToNode.Path > bestLink.ToNode.Path)
 				{
 					bestLink = link;
 				}
@@ -235,10 +219,48 @@ namespace SingaporeSkiing
 		}
 	}
 
-	internal class Path
+	internal class Path : IComparable<Path>
 	{
 		public long Steps { get; set; }
 		public long Descent { get; set; }
+
+		public int CompareTo(Path other)
+		{
+			if (other == null)
+				return 1;
+
+			if (Steps == other.Steps)
+			{
+				if (Descent == other.Descent)
+				{
+					return 0;
+				}
+
+				if (Descent > other.Descent)
+				{
+					return 1;
+				}
+
+				return -1;
+			}
+
+			if (Steps > other.Steps)
+			{
+				return 1;
+			}
+
+			return -1;
+		}
+
+		public static bool operator <(Path p1, Path p2)
+		{
+			return p1.CompareTo(p2) < 0;
+		}
+
+		public static bool operator >(Path p1, Path p2)
+		{
+			return p1.CompareTo(p2) > 0;
+		}
 	}
 
 	internal class Link
