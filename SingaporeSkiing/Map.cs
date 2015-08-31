@@ -202,27 +202,27 @@ namespace SingaporeSkiing
 
 			if (bestLink == null)
 			{
-				Path = new Path()
-				{
-					Descent = 0,
-					Steps = 1
-				};
+				Path = new Path(1, 0);
 			}
 			else
 			{
-				Path = new Path()
-				{
-					Descent = bestLink.Descent + bestLink.ToNode.Path.Descent,
-					Steps = bestLink.ToNode.Path.Steps + 1
-				};
+				var steps = bestLink.ToNode.Path.Steps + 1;
+				var descent = bestLink.Descent + bestLink.ToNode.Path.Descent;
+				Path = new Path(steps, descent);
 			}
 		}
 	}
 
 	internal class Path : IComparable<Path>
 	{
-		public long Steps { get; set; }
-		public long Descent { get; set; }
+		public long Steps { get; }
+		public long Descent { get; }
+
+		public Path(long steps, long descent)
+		{
+			Steps = steps;
+			Descent = descent;
+		}
 
 		public int CompareTo(Path other)
 		{
