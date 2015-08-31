@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SingaporeSkiing
 {
@@ -94,7 +95,8 @@ namespace SingaporeSkiing
 						var link = new Link()
 						{
 							Descent = node.Altitude - neighbourNode.Altitude,
-							ToNode = neighbourNode
+							ToNode = neighbourNode,
+							FromNode = node
 						};
 						node.Links.Add(link);
 					}
@@ -202,26 +204,42 @@ namespace SingaporeSkiing
 
 			if (bestLink == null)
 			{
-				Path = new Path(1, 0);
+				Path = new Path(this);
 			}
 			else
 			{
-				var steps = bestLink.ToNode.Path.Steps + 1;
-				var descent = bestLink.Descent + bestLink.ToNode.Path.Descent;
-				Path = new Path(steps, descent);
+				Path = new Path(bestLink);
 			}
 		}
 	}
 
 	internal class Path : IComparable<Path>
 	{
-		public long Steps { get; }
+		public long Steps
+		{
+			get { return _nodes.Count; }
+		}
+
 		public long Descent { get; }
 
-		public Path(long steps, long descent)
+		public IReadOnlyList<MapNode> Nodes
 		{
-			Steps = steps;
-			Descent = descent;
+			get { return _nodes.AsReadOnly(); }
+		}
+
+		private readonly List<MapNode> _nodes;
+
+		public Path(MapNode mapNode)
+		{
+			_nodes = new List<MapNode>();
+			_nodes.Add(mapNode);
+			Descent = 0;
+		}
+
+		public Path(Link link) : this(link.FromNode)
+		{
+			_nodes.AddRange(link.ToNode.Path.Nodes);
+			Descent = _nodes.First().Altitude - _nodes.Last().Altitude;
 		}
 
 		public int CompareTo(Path other)
@@ -267,5 +285,6 @@ namespace SingaporeSkiing
 	{
 		public long Descent { get; set; }
 		public MapNode ToNode { get; set; }
+		public MapNode FromNode { get; set; }
 	}
 }
