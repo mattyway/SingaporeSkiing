@@ -46,14 +46,12 @@ namespace SingaporeSkiing
 				{
 					MapNode node = GetNode(x, y);
 
-					MapNode[] neighbourNodes = new MapNode[4];
-
 					if (x > 0)
 					{
 						var westNode = GetNode(x - 1, y);
 						if (westNode.Altitude < node.Altitude)
 						{
-							neighbourNodes[0] = westNode;
+							node.NeighbourNodes.Add(westNode);
 						}
 					}
 
@@ -62,7 +60,7 @@ namespace SingaporeSkiing
 						var eastNode = GetNode(x + 1, y);
 						if (eastNode.Altitude < node.Altitude)
 						{
-							neighbourNodes[1] = eastNode;
+							node.NeighbourNodes.Add(eastNode);
 						}
 					}
 
@@ -71,7 +69,7 @@ namespace SingaporeSkiing
 						var northNode = GetNode(x, y - 1);
 						if (northNode.Altitude < node.Altitude)
 						{
-							neighbourNodes[2] = northNode;
+							node.NeighbourNodes.Add(northNode);
 						}
 					}
 
@@ -80,25 +78,8 @@ namespace SingaporeSkiing
 						var southNode = GetNode(x, y + 1);
 						if (southNode.Altitude < node.Altitude)
 						{
-							neighbourNodes[3] = southNode;
+							node.NeighbourNodes.Add(southNode);
 						}
-					}
-
-					for (int i = 0; i < neighbourNodes.Length; i++)
-					{
-						var neighbourNode = neighbourNodes[i];
-						if (neighbourNode == null)
-						{
-							continue;
-						}
-
-						var link = new Link()
-						{
-							Descent = node.Altitude - neighbourNode.Altitude,
-							ToNode = neighbourNode,
-							FromNode = node
-						};
-						node.Links.Add(link);
 					}
 				}
 			}
@@ -176,39 +157,40 @@ namespace SingaporeSkiing
 
 		public Path Path { get; set; }
 
-		public List<Link> Links { get; }
+		public List<MapNode> NeighbourNodes { get; }
 
 		public MapNode(long x, long y, long altitude)
 		{
 			X = x;
 			Y = y;
 			Altitude = altitude;
-			Links = new List<Link>();
+			NeighbourNodes = new List<MapNode>();
 		}
 
 		public void BuildPath()
 		{
-			Link bestLink = null;
-			foreach (var link in Links)
+			Path bestPath = null;
+			foreach (var neighbourNode in NeighbourNodes)
 			{
-				if (!link.ToNode.PathBuilt)
+				if (!neighbourNode.PathBuilt)
 				{
-					link.ToNode.BuildPath();
+					neighbourNode.BuildPath();
 				}
 
-				if (bestLink == null || link.ToNode.Path > bestLink.ToNode.Path)
+				var testPath = new Path(this, neighbourNode);
+				if (bestPath == null || testPath > bestPath)
 				{
-					bestLink = link;
+					bestPath = testPath;
 				}
 			}
 
-			if (bestLink == null)
+			if (bestPath == null)
 			{
 				Path = new Path(this);
 			}
 			else
 			{
-				Path = new Path(bestLink);
+				Path = bestPath;
 			}
 		}
 	}
@@ -236,9 +218,9 @@ namespace SingaporeSkiing
 			Descent = 0;
 		}
 
-		public Path(Link link) : this(link.FromNode)
+		public Path(MapNode fromNode, MapNode toNode) : this(fromNode)
 		{
-			_nodes.AddRange(link.ToNode.Path.Nodes);
+			_nodes.AddRange(toNode.Path.Nodes);
 			Descent = _nodes.First().Altitude - _nodes.Last().Altitude;
 		}
 
@@ -279,12 +261,5 @@ namespace SingaporeSkiing
 		{
 			return p1.CompareTo(p2) > 0;
 		}
-	}
-
-	internal class Link
-	{
-		public long Descent { get; set; }
-		public MapNode ToNode { get; set; }
-		public MapNode FromNode { get; set; }
 	}
 }
