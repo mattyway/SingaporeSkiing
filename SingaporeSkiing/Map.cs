@@ -163,9 +163,9 @@ namespace SingaporeSkiing
 
 	internal class MapNode
 	{
-		public long X { get; private set; }
-		public long Y { get; private set; }
-		public long Altitude { get; private set; }
+		public long X { get; }
+		public long Y { get; }
+		public long Altitude { get; }
 
 		public bool PathBuilt
 		{
@@ -174,7 +174,7 @@ namespace SingaporeSkiing
 
 		public Path Path { get; set; }
 
-		public List<Link> Links { get; set; }
+		public List<Link> Links { get; }
 
 		public MapNode(long x, long y, long altitude)
 		{
