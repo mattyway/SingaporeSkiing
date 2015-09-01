@@ -105,9 +105,10 @@ namespace SingaporeSkiing
 			pixelBufferHandle.Free();
 		}
 
-		static Color CalculateColour (double offset)
+		private static Color CalculateColour(double offset)
 		{
-			var colours = new[] {
+			var colours = new[]
+			{
 				new Tuple<double, Color>(0, Color.FromArgb(255, 0, 0, 255)),
 				new Tuple<double, Color>(0.5f, Color.FromArgb(255, 0, 255, 0)),
 				new Tuple<double, Color>(1, Color.FromArgb(255, 255, 0, 0)),
@@ -116,12 +117,15 @@ namespace SingaporeSkiing
 			Tuple<double, Color> before = colours.OrderBy(c => c.Item1).First();
 			Tuple<double, Color> after = colours.OrderByDescending(c => c.Item1).First();
 
-			foreach (var gradientStop in colours) {
-				if (gradientStop.Item1 < offset && gradientStop.Item1 > before.Item1) {
+			foreach (var gradientStop in colours)
+			{
+				if (gradientStop.Item1 < offset && gradientStop.Item1 > before.Item1)
+				{
 					before = gradientStop;
 				}
 
-				if (gradientStop.Item1 > offset && gradientStop.Item1 < after.Item1) {
+				if (gradientStop.Item1 > offset && gradientStop.Item1 < after.Item1)
+				{
 					after = gradientStop;
 				}
 			}
