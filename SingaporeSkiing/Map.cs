@@ -15,17 +15,9 @@ namespace SingaporeSkiing
 			_mapData = mapData;
 
 			_nodes = new MapNode[_mapData.Altitudes.Length];
-
-			BuildNodes();
-
-			BuildLinks();
-
-			BuildPaths();
-
-			FindPath();
 		}
 
-		private void BuildNodes()
+		public void BuildNodes()
 		{
 			for (long y = 0; y < _mapData.Height; y++)
 			{
@@ -38,7 +30,7 @@ namespace SingaporeSkiing
 			}
 		}
 
-		private void BuildLinks()
+		public void BuildLinks()
 		{
 			for (long y = 0; y < _mapData.Height; y++)
 			{
@@ -85,7 +77,7 @@ namespace SingaporeSkiing
 			}
 		}
 
-		private void BuildPaths()
+		public void BuildPaths()
 		{
 			for (long y = 0; y < _mapData.Height; y++)
 			{
@@ -101,7 +93,7 @@ namespace SingaporeSkiing
 			}
 		}
 
-		private void FindPath()
+		public Path FindPath()
 		{
 			MapNode bestNode = null;
 
@@ -118,14 +110,7 @@ namespace SingaporeSkiing
 				}
 			}
 
-			if (bestNode != null)
-			{
-				Console.WriteLine($"Best path has {bestNode.Path.Steps} steps with a descent of {bestNode.Path.Descent}");
-			}
-			else
-			{
-				Console.WriteLine("Failed to find best path");
-			}
+			return bestNode?.Path;
 		}
 
 		private MapNode GetNode(long x, long y)

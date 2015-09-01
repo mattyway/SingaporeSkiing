@@ -58,6 +58,20 @@ namespace SingaporeSkiing
 			ExportImage(mapData, highestAltitude, filename);
 
 			Map map = new Map(mapData);
+			map.BuildNodes();
+			map.BuildLinks();
+			map.BuildPaths();
+
+			var bestPath = map.FindPath();
+
+			if (bestPath != null)
+			{
+				Console.WriteLine($"Best path has {bestPath.Steps} steps with a descent of {bestPath.Descent}");
+			}
+			else
+			{
+				Console.WriteLine("Failed to find best path");
+			}
 
 			return 0;
 		}
