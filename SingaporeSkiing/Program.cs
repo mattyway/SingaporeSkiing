@@ -30,32 +30,7 @@ namespace SingaporeSkiing
 				return 2;
 			}
 
-			long highestAltitude = -1;
-			long highestAltitudeCount = 0;
-
-			foreach (var altitude in mapData.Altitudes)
-			{
-				if (altitude > highestAltitude)
-				{
-					highestAltitude = altitude;
-					highestAltitudeCount = 1;
-				}
-				else if (altitude == highestAltitude)
-				{
-					highestAltitudeCount++;
-				}
-			}
-
-			if (highestAltitude != -1 && highestAltitudeCount > 0)
-			{
-				Console.WriteLine($"Found a total of {highestAltitudeCount} peaks at altitude {highestAltitude}");
-			}
-			else
-			{
-				Console.WriteLine("Failed to find highest altitude");
-			}
-
-			ExportImage(mapData, highestAltitude, filename);
+			ExportImage(mapData, filename);
 
 			Map map = new Map(mapData);
 			map.BuildNodes();
@@ -76,8 +51,10 @@ namespace SingaporeSkiing
 			return 0;
 		}
 
-		private static void ExportImage(MapData mapData, long highestAltitude, string filename)
+		private static void ExportImage(MapData mapData, string filename)
 		{
+			long highestAltitude = mapData.Altitudes.Max();
+
 			byte[] pixelBuffer = new byte[mapData.Width*mapData.Height*3];
 			for (long i = 0; i < pixelBuffer.Length; i += 3)
 			{
