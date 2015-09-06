@@ -191,7 +191,7 @@ namespace SingaporeSkiing
 
 		public IReadOnlyList<MapNode> Nodes
 		{
-			get { return _nodes.AsReadOnly(); }
+			get { return _nodes; }
 		}
 
 		private readonly List<MapNode> _nodes;
