@@ -97,9 +97,9 @@ namespace SingaporeSkiing
 		{
 			MapNode bestNode = null;
 
-			for (long y = _mapData.Height - 1; y >= 0; y--)
+			for (long y = 0; y < _mapData.Height; y++)
 			{
-				for (long x = _mapData.Width - 1; x >= 0; x--)
+				for (long x = 0; x < _mapData.Width; x++)
 				{
 					MapNode node = GetNode(x, y);
 
