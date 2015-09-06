@@ -30,8 +30,6 @@ namespace SingaporeSkiing
 				return 2;
 			}
 
-			MapVisualiser.ExportImage(mapData, filename);
-
 			Map map = new Map(mapData);
 			map.BuildNodes();
 			map.BuildLinks();
